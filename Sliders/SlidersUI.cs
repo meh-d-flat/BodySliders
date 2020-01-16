@@ -18,7 +18,7 @@ namespace BodySliders
 		
 		string presetName = String.Empty, charaNewName = String.Empty;
 	
-		float wsMin = (float)LimitConfig.NewMin / 100, wsMax = (float)LimitConfig.NewMax / 100;//WideSlider
+		float wideSliderMin = (float)LimitConfig.NewMin / 100, wideSliderMax = (float)LimitConfig.NewMax / 100;//WideSlider
 
 		SubType subType;
 		
@@ -47,9 +47,9 @@ namespace BodySliders
 		{
 			R1ID = new System.Random().Next();
 			R2ID = R1ID - 1;
-			windowMain.position = SlidersPlugin.wPos;
+			windowMain.position = SlidersPlugin.windowPosition;
 			subType = SubType.none;
-			onlySliderValues = SlidersPlugin.values;
+			onlySliderValues = SlidersPlugin.onlyBodyValues;
 			somePart = AllParts.nullPart;
 		}
 		

@@ -7,9 +7,9 @@ namespace BodySliders
 	{
 		bool pluginEnabled;
 		
-		public static Vector2 wPos = new Vector2(10, 10);
+		public static Vector2 windowPosition = new Vector2(10, 10);
 		
-		public static bool values;
+		public static bool onlyBodyValues;
 		
 		public string Name {
 			get {
@@ -43,8 +43,8 @@ namespace BodySliders
 			if (Input.GetKeyDown((KeyCode)System.Enum.Parse(typeof(KeyCode), ModPrefs.GetString("BodySliders", "enable|disable"))) && Manager.Scene.Instance.ActiveScene.name == "Studio")
 				Switch();
 			
-			wPos = SlidersUI.windowMain.position;
-			values = SlidersUI.onlySliderValues;
+			windowPosition = SlidersUI.windowMain.position;
+			onlyBodyValues = SlidersUI.onlySliderValues;
 		}
 		
 		public void OnUpdate() {}
@@ -53,6 +53,7 @@ namespace BodySliders
 		public void OnLevelWasInitialized(int level) {}
 		public void OnFixedUpdate()	{}
 		
+		//TODO: come up with something better for enable / disable
 		void Switch()
 		{
 			if (pluginEnabled)

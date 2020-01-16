@@ -723,6 +723,7 @@ namespace BodySliders
 				chara.chaCustom.SetShapeFaceValue(partIndex, newValue);
 		}
 		
+		//TODO: figure out a way to do height while char's FK/IK is influenced by StudioNEOPlugin
 		public static void BodySlider(CharFemale chara, string[] partNames, int partIndex)
 		{
 			float newValue = AbsSlider(chara.customInfo.shapeValueBody[partIndex], partNames[partIndex]);
@@ -875,7 +876,7 @@ namespace BodySliders
 		}
 	}
 	
-	public static class ex
+	public static class Extension
 	{
 		public static T RandomMember<T>(this T[] array) {
 			return array[new System.Random().Next(array.Length)];
