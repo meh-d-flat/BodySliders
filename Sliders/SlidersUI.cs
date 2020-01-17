@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace BodySliders
 {
@@ -36,6 +37,12 @@ namespace BodySliders
 
 		CharacterPart somePart;
 		
+		CharaList listFemale, listMale;
+		
+		CharaFileSort charaFiles;
+		
+		Transform mainCanvas;
+		
 		public enum SubType
 		{
 			none,
@@ -51,6 +58,13 @@ namespace BodySliders
 			subType = SubType.none;
 			onlySliderValues = SlidersPlugin.onlyBodyValues;
 			somePart = AllParts.nullPart;
+		}
+		
+		void Start()
+		{
+			mainCanvas = studio.gameObject.transform.Find("Canvas Main Menu");
+			listFemale = mainCanvas.Find("01_Add/00_Female").gameObject.GetComponent<CharaList>();
+			listMale = mainCanvas.Find("01_Add/01_Male").gameObject.GetComponent<CharaList>();
 		}
 		
 		void LateUpdate()
@@ -127,6 +141,8 @@ namespace BodySliders
 				GUILayout.Label("§>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 				somePart = AllParts.GetPart(somePart);
 				
+				DeleteButton();
+				
 				GUILayout.EndScrollView();				
 				if (GUILayout.Button("SAVE CHAR"))
 					Save();
@@ -138,11 +154,24 @@ namespace BodySliders
 				charaNewName = GUILayout.TextField(charaNewName, 30);
 				if (GUILayout.Button("SAVE MALE CHAR"))
 					Save();	
+				
+				DeleteButton();
 			}
 			else
-				GUILayout.Label("Select a character");			
+			{
+				GUILayout.Label("Select a character!");
+				DeleteButton();
+			}
 			
 			GUI.DragWindow();
+		}
+
+		void DeleteButton()
+		{
+			GUILayout.Label("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+			if (GUILayout.Button("DELETE CHARACTER SELECTED IN CHAR LIST"))
+				Delete();
+			GUILayout.Label("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 		}
 		
 		bool Check()
@@ -252,11 +281,29 @@ namespace BodySliders
 			byte[] bytes = screenShot.EncodeToPNG();
 			chara.ChangeSavePng(path2, bytes); 
 			charaNewName = String.Empty;
-			var t = studio.gameObject.transform.Find("Canvas Main Menu");
-			var lstFemale = t.Find("01_Add/00_Female").gameObject.GetComponent<CharaList>();
-			var lstMale = t.Find("01_Add/01_Male").gameObject.GetComponent<CharaList>();
-			lstFemale.InitCharaList(true);
-			lstMale.InitCharaList(true);
+			mainCanvas.gameObject.SetActive(false);
+			listFemale.InitCharaList(true);
+			listMale.InitCharaList(true);
+			mainCanvas.gameObject.SetActive(true);
+		}
+		
+		void Delete()
+		{
+			CharaList operatingList = mainCanvas.Find("01_Add/00_Female").gameObject.activeInHierarchy ? listFemale : mainCanvas.Find("01_Add/01_Male").gameObject.activeInHierarchy ? listMale : null;
+			if (operatingList != null)
+			{
+				charaFiles = (CharaFileSort)operatingList.GetType()
+				.GetField("charaFileSort", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(operatingList);
+				if (charaFiles.selectPath != String.Empty)
+				{
+					var sortType = charaFiles.sortKind;
+					mainCanvas.gameObject.SetActive(false);
+					System.IO.File.Delete(charaFiles.selectPath);
+					operatingList.InitCharaList(true);
+					operatingList.OnSort(sortType);
+					mainCanvas.gameObject.SetActive(true);
+				}
+			}
 		}
 	}
 }
