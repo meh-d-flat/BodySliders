@@ -141,6 +141,16 @@ namespace BodySliders
 				GUILayout.Label("§>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 				somePart = AllParts.GetPart(somePart);
 				
+				GUILayout.Label("§ Load selected char's:");
+				if (GUILayout.Button("Hair"))
+					LoadHair();
+					
+				if (GUILayout.Button("Face"))
+					LoadFace();
+				
+				if (GUILayout.Button("Body"))
+					LoadBody();
+				
 				DeleteButton();
 				
 				GUILayout.EndScrollView();				
@@ -189,24 +199,23 @@ namespace BodySliders
 	
 		CustomMenu.SmCustomLoad.FileInfo [] PresetList(bool body)
 		{
-			CustomMenu.SmCustomLoad.CustomData shiet;
 			var presetList = new List<CustomMenu.SmCustomLoad.FileInfo>(32);
 			var folderAssist = new FolderAssist();
 			string folder = UserData.Path + "custom/female/";
 			string[] searchPattern = body ? new string []{ "*.body" } : new string [] { "*.face" };
 			folderAssist.CreateFolderInfoEx(folder, searchPattern, true);			
 			var type = (byte)(body ? 0 : 1);// 0 for body 1 for face
-			shiet = new CustomMenu.SmCustomLoad.CustomDataFemale(type);
+			CustomMenu.SmCustomLoad.CustomData customData = new CustomMenu.SmCustomLoad.CustomDataFemale(type);
 
 			for (int i = 0; i < folderAssist.lstFile.Count; i++) {
-				shiet.Load(folderAssist.lstFile[i].FullPath, null);
+				customData.Load(folderAssist.lstFile[i].FullPath, null);
 				var fileInfo = new CustomMenu.SmCustomLoad.FileInfo();
 				fileInfo.no = i;
 				fileInfo.fullPath = folderAssist.lstFile[i].FullPath;
 				fileInfo.fileName = folderAssist.lstFile[i].FileName;
 				fileInfo.time = folderAssist.lstFile[i].time;
 				fileInfo.type = (int)type;
-				fileInfo.comment = shiet.comment;
+				fileInfo.comment = customData.comment;
 				presetList.Add(fileInfo);
 			}
 			return presetList.ToArray();
@@ -215,13 +224,12 @@ namespace BodySliders
 		void SavePreset(bool body)
 		{
 			var setName = (presetName == String.Empty) ? "unnamed" : presetName;
-			CustomMenu.SmCustomLoad.CustomData shiet;
 			var type = (byte)(body ? 0 : 1);
-			string ext = body ? ".body" : ".face";	
-			shiet = new CustomMenu.SmCustomLoad.CustomDataFemale(type);
-			string stuffz = UserData.Path + "custom/female/f_" + setName + "_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + ext;
-			shiet.comment = setName;
-			shiet.Save(stuffz, charaFemale.customInfo);
+			string extension = body ? ".body" : ".face";	
+			CustomMenu.SmCustomLoad.CustomData customData = new CustomMenu.SmCustomLoad.CustomDataFemale(type);
+			string filePath = UserData.Path + "custom/female/f_" + setName + "_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + extension;
+			customData.comment = setName;
+			customData.Save(filePath, charaFemale.customInfo);
 			presetName = String.Empty;
 		}
 		
@@ -229,12 +237,11 @@ namespace BodySliders
 		{
 			var mouth = charaFemale.chaBody.mouthCtrl.FixedRate;
 			var eyes = charaFemale.chaBody.eyesCtrl.OpenMax;
-			CustomMenu.SmCustomLoad.CustomData shiet;
 			var type = (byte)(body ? 0 : 1);
-			shiet = new CustomMenu.SmCustomLoad.CustomDataFemale(type);
+			CustomMenu.SmCustomLoad.CustomData customData = new CustomMenu.SmCustomLoad.CustomDataFemale(type);
 			if (onlySliderValues) {
 				var temporaryPizda = new CharFileInfoCustomFemale();
-				shiet.Load(path, temporaryPizda);
+				customData.Load(path, temporaryPizda);
 				if (body) {
 					for (int i = 0; i < charaFemale.customInfo.shapeValueBody.Length; i++)
 						charaFemale.customInfo.shapeValueBody[i] = temporaryPizda.shapeValueBody[i];
@@ -244,7 +251,8 @@ namespace BodySliders
 					for (int i = 0; i < charaFemale.customInfo.shapeValueFace.Length; i++)
 						charaFemale.customInfo.shapeValueFace[i] = temporaryPizda.shapeValueFace[i];
 			} else
-				shiet.Load(path, charaFemale.customInfo);
+				customData.Load(path, charaFemale.customInfo);
+			
 			charaFemale.Reload(true, false, true);
 			charaFemale.UpdateBustSoftnessAndGravity();
 			charaFemale.chaBody.mouthCtrl.FixedRate = mouth;
@@ -287,6 +295,18 @@ namespace BodySliders
 			mainCanvas.gameObject.SetActive(true);
 		}
 		
+		string GetCharCardPath()
+		{
+			CharaList operatingList = mainCanvas.Find("01_Add/00_Female").gameObject.activeInHierarchy ? listFemale : mainCanvas.Find("01_Add/01_Male").gameObject.activeInHierarchy ? listMale : null;
+			if (operatingList != null)
+			{
+				charaFiles = (CharaFileSort)operatingList.GetType()
+				.GetField("charaFileSort", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(operatingList);
+				return charaFiles.selectPath;
+			}
+			return null;
+		}
+		
 		void Delete()
 		{
 			CharaList operatingList = mainCanvas.Find("01_Add/00_Female").gameObject.activeInHierarchy ? listFemale : mainCanvas.Find("01_Add/01_Male").gameObject.activeInHierarchy ? listMale : null;
@@ -294,7 +314,7 @@ namespace BodySliders
 			{
 				charaFiles = (CharaFileSort)operatingList.GetType()
 				.GetField("charaFileSort", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(operatingList);
-				if (charaFiles.selectPath != String.Empty)
+				if (charaFiles.selectPath != null)
 				{
 					var sortType = charaFiles.sortKind;
 					mainCanvas.gameObject.SetActive(false);
@@ -303,6 +323,110 @@ namespace BodySliders
 					operatingList.OnSort(sortType);
 					mainCanvas.gameObject.SetActive(true);
 				}
+			}
+		}
+		
+		void LoadBody()
+		{
+			string charPath = GetCharCardPath();
+			if (charPath != null)
+			{
+				CharFemaleFile cff = new CharFemaleFile();
+				cff.Load(charPath, true, true);
+				CharFileInfoCustomFemale cfic = cff.femaleCustomInfo;
+			
+				charaFemale.femaleCustomInfo.shapeValueBody = cfic.shapeValueBody;
+				charaFemale.femaleCustomInfo.areolaSize = cfic.areolaSize;
+				charaFemale.femaleCustomInfo.bodyDetailWeight = cfic.bodyDetailWeight;
+				charaFemale.femaleCustomInfo.bustSoftness = cfic.bustSoftness;
+				charaFemale.femaleCustomInfo.bustWeight = cfic.bustWeight;
+				charaFemale.femaleCustomInfo.matNipId = cfic.matNipId;
+				charaFemale.femaleCustomInfo.matUnderhairId = cfic.matUnderhairId;
+				charaFemale.femaleCustomInfo.nailColor = cfic.nailColor;
+				charaFemale.femaleCustomInfo.nipColor = cfic.nipColor;
+				charaFemale.femaleCustomInfo.skinColor = cfic.skinColor;
+				charaFemale.femaleCustomInfo.sunburnColor = cfic.sunburnColor;
+				charaFemale.femaleCustomInfo.tattoo_bColor = cfic.tattoo_bColor;
+				charaFemale.femaleCustomInfo.texBodyDetailId = cfic.texBodyDetailId;
+				charaFemale.femaleCustomInfo.texBodyId = cfic.texBodyId;
+				charaFemale.femaleCustomInfo.texSunburnId = cfic.texSunburnId;
+				charaFemale.femaleCustomInfo.texTattoo_bId = cfic.texTattoo_bId;
+				charaFemale.femaleCustomInfo.underhairColor = cfic.underhairColor;
+			
+				charaFemale.femaleCustom.UpdateShapeBodyValueFromCustomInfo();
+				charaFemale.femaleCustom.ChangeCustomBodyWithoutCustomTexture();
+				charaFemale.UpdateBustSoftnessAndGravity();
+				Functionality.UpdateBody(charaFemale, true, true, false);
+				Functionality.UpdateBody(charaFemale, false, true, true);
+				charaFemale.UpdateFace();
+			}
+			
+		}
+		
+		void LoadFace()
+		{
+			string charPath = GetCharCardPath();
+			if (charPath != null)
+			{
+				CharFemaleFile cff = new CharFemaleFile();
+				cff.Load(charPath, true, true);
+				CharFileInfoCustomFemale cfic = cff.femaleCustomInfo;
+					
+				charaFemale.femaleCustomInfo.cheekColor = cfic.cheekColor;
+				charaFemale.femaleCustomInfo.eyebrowColor = cfic.eyebrowColor;
+				charaFemale.femaleCustomInfo.eyeHiColor = cfic.eyeHiColor;
+				charaFemale.femaleCustomInfo.eyelashesColor = cfic.eyelashesColor;
+				charaFemale.femaleCustomInfo.eyeLColor = cfic.eyeLColor;
+				charaFemale.femaleCustomInfo.eyeRColor = cfic.eyeRColor;
+				charaFemale.femaleCustomInfo.eyeshadowColor = cfic.eyeshadowColor;
+				charaFemale.femaleCustomInfo.eyeWColor = cfic.eyeWColor;
+				charaFemale.femaleCustomInfo.faceDetailWeight = cfic.faceDetailWeight;
+				charaFemale.femaleCustomInfo.headId = cfic.headId;
+				charaFemale.femaleCustomInfo.lipColor = cfic.lipColor;
+				charaFemale.femaleCustomInfo.matEyebrowId = cfic.matEyebrowId;
+				charaFemale.femaleCustomInfo.matEyeHiId = cfic.matEyeHiId;
+				charaFemale.femaleCustomInfo.matEyelashesId = cfic.matEyelashesId;
+				charaFemale.femaleCustomInfo.matEyeLId = cfic.matEyeLId;
+				charaFemale.femaleCustomInfo.matEyeRId = cfic.matEyeRId;
+				charaFemale.femaleCustomInfo.matNipId = cfic.matNipId;
+				charaFemale.femaleCustomInfo.matUnderhairId = cfic.matUnderhairId;
+				charaFemale.femaleCustomInfo.moleColor = cfic.moleColor;
+				charaFemale.femaleCustomInfo.shapeValueFace = cfic.shapeValueFace;
+				charaFemale.femaleCustomInfo.tattoo_fColor = cfic.tattoo_fColor;
+				charaFemale.femaleCustomInfo.texCheekId = cfic.texCheekId;
+				charaFemale.femaleCustomInfo.texEyeshadowId = cfic.texEyeshadowId;
+				charaFemale.femaleCustomInfo.texFaceDetailId = cfic.texFaceDetailId;
+				charaFemale.femaleCustomInfo.texFaceId = cfic.texFaceId;
+				charaFemale.femaleCustomInfo.texLipId = cfic.texLipId;
+				charaFemale.femaleCustomInfo.texMoleId = cfic.texMoleId;
+				charaFemale.femaleCustomInfo.texTattoo_fId = cfic.texTattoo_fId;
+			
+				charaFemale.femaleBody.ChangeHeadNew();
+				charaFemale.femaleCustom.UpdateShapeFaceValueFromCustomInfo();
+				charaFemale.femaleCustom.ChangeCustomFaceWithoutCustomTexture();
+				Functionality.UpdateBody(charaFemale, true, true, false);
+				Functionality.UpdateBody(charaFemale, false, true, true);
+				charaFemale.UpdateFace();
+			}
+		}
+		
+		void LoadHair()
+		{
+			string charPath = GetCharCardPath();
+			if (charPath != null)
+			{
+				CharFemaleFile cff = new CharFemaleFile();
+				cff.Load(charPath, true, true);
+				CharFileInfoCustomFemale cfic = cff.femaleCustomInfo;
+			
+				charaFemale.femaleCustomInfo.hairAcsColor = cfic.hairAcsColor;
+				charaFemale.femaleCustomInfo.hairColor = cfic.hairColor;
+				charaFemale.femaleCustomInfo.hairId = cfic.hairId;
+				charaFemale.femaleCustomInfo.hairType = cfic.hairType;
+					
+				charaFemale.femaleBody.ChangeHair(true);
+				for (int i = 0; i < charaFemale.femaleCustomInfo.hairId.Length; i++)
+					charaFemale.femaleCustom.ChangeHairColor(i);
 			}
 		}
 	}

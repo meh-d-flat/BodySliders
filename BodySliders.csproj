@@ -34,31 +34,31 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\..\shit\HoneySelect\StudioNEO_64_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\..\..\..\shit\HoneySelect\StudioNEO_64_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="IllusionPlugin">
-      <HintPath>..\..\..\..\shit\HoneySelect\StudioNEO_64_Data\Managed\IllusionPlugin.dll</HintPath>
+      <HintPath>..\..\..\..\..\shit\HoneySelect\StudioNEO_64_Data\Managed\IllusionPlugin.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
-      <HintPath>..\..\..\..\shit\HoneySelect\StudioNEO_64_Data\Managed\mscorlib.dll</HintPath>
+      <HintPath>..\..\..\..\..\shit\HoneySelect\StudioNEO_64_Data\Managed\mscorlib.dll</HintPath>
     </Reference>
     <Reference Include="System">
-      <HintPath>..\..\..\..\shit\HoneySelect\StudioNEO_64_Data\Managed\System.dll</HintPath>
+      <HintPath>..\..\..\..\..\shit\HoneySelect\StudioNEO_64_Data\Managed\System.dll</HintPath>
     </Reference>
     <Reference Include="System.Core">
-      <HintPath>..\..\..\..\shit\HoneySelect\StudioNEO_64_Data\Managed\System.Core.dll</HintPath>
+      <HintPath>..\..\..\..\..\shit\HoneySelect\StudioNEO_64_Data\Managed\System.Core.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\shit\HoneySelect\StudioNEO_64_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>..\..\..\..\..\shit\HoneySelect\StudioNEO_64_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\..\..\..\shit\HoneySelect\StudioNEO_64_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>..\..\..\..\..\shit\HoneySelect\StudioNEO_64_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI.Translation">
-      <HintPath>..\..\..\..\shit\HoneySelect\StudioNEO_64_Data\Managed\UnityEngine.UI.Translation.dll</HintPath>
+      <HintPath>..\..\..\..\..\shit\HoneySelect\StudioNEO_64_Data\Managed\UnityEngine.UI.Translation.dll</HintPath>
     </Reference>
     <Reference Include="WideSliderManaged">
-      <HintPath>..\..\..\..\shit\HoneySelect\StudioNEO_64_Data\Managed\WideSliderManaged.dll</HintPath>
+      <HintPath>..\..\..\..\..\shit\HoneySelect\StudioNEO_64_Data\Managed\WideSliderManaged.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
