@@ -297,7 +297,7 @@ namespace BodySliders
 		
 		string GetCharCardPath()
 		{
-			CharaList operatingList = mainCanvas.Find("01_Add/00_Female").gameObject.activeInHierarchy ? listFemale : mainCanvas.Find("01_Add/01_Male").gameObject.activeInHierarchy ? listMale : null;
+			CharaList operatingList = mainCanvas.Find("01_Add/00_Female").gameObject.activeInHierarchy ? listFemale : null;
 			if (operatingList != null)
 			{
 				charaFiles = (CharaFileSort)operatingList.GetType()
