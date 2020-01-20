@@ -341,8 +341,8 @@ namespace BodySliders
 				charaFemale.femaleCustomInfo.shapeValueBody = cfic.shapeValueBody;
 				charaFemale.femaleCustomInfo.areolaSize = cfic.areolaSize;
 				charaFemale.femaleCustomInfo.bodyDetailWeight = cfic.bodyDetailWeight;
-//				charaFemale.femaleCustomInfo.bustSoftness = cfic.bustSoftness;
-//				charaFemale.femaleCustomInfo.bustWeight = cfic.bustWeight;
+				charaFemale.femaleCustomInfo.bustSoftness = cfic.bustSoftness;
+				charaFemale.femaleCustomInfo.bustWeight = cfic.bustWeight;
 				charaFemale.femaleCustomInfo.matNipId = cfic.matNipId;
 				charaFemale.femaleCustomInfo.matUnderhairId = cfic.matUnderhairId;
 				charaFemale.femaleCustomInfo.nailColor = cfic.nailColor;
@@ -356,15 +356,9 @@ namespace BodySliders
 				charaFemale.femaleCustomInfo.texTattoo_bId = cfic.texTattoo_bId;
 				charaFemale.femaleCustomInfo.underhairColor = cfic.underhairColor;
 				
-				charaFemale.femaleCustom.UpdateShapeBodyValueFromCustomInfo();
-				charaFemale.femaleCustom.UpdateShapeBody();
-				charaFemale.ChangeBustGravity(cfic.bustWeight);
-				charaFemale.ChangeBustSoftness(cfic.bustSoftness);
-				charaFemale.ReSetupDynamicBone();
-				charaFemale.UpdateBustSoftnessAndGravity();
-				charaFemale.femaleBody.updateBustSize = true;
-				charaFemale.femaleCustom.ChangeCustomBodyWithoutCustomTexture();
-				Functionality.UpdateBody(charaFemale, true, true, true);
+				charaFemale.Reload(true, true, true);
+//				charaFemale.ChangeBustGravity(cfic.bustWeight);
+//				charaFemale.ChangeBustSoftness(cfic.bustSoftness);
 				charaFemale.UpdateFace();
 			}
 		}
