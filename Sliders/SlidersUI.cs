@@ -151,6 +151,9 @@ namespace BodySliders
 				if (GUILayout.Button("Body"))
 					LoadBody();
 				
+				if (GUILayout.Button("Fuse face"))
+					FuseFace();
+				
 				DeleteButton();
 				
 				GUILayout.EndScrollView();				
@@ -384,8 +387,6 @@ namespace BodySliders
 				charaFemale.femaleCustomInfo.matEyelashesId = cfic.matEyelashesId;
 				charaFemale.femaleCustomInfo.matEyeLId = cfic.matEyeLId;
 				charaFemale.femaleCustomInfo.matEyeRId = cfic.matEyeRId;
-				charaFemale.femaleCustomInfo.matNipId = cfic.matNipId;
-				charaFemale.femaleCustomInfo.matUnderhairId = cfic.matUnderhairId;
 				charaFemale.femaleCustomInfo.moleColor = cfic.moleColor;
 				charaFemale.femaleCustomInfo.shapeValueFace = cfic.shapeValueFace;
 				charaFemale.femaleCustomInfo.tattoo_fColor = cfic.tattoo_fColor;
@@ -418,6 +419,99 @@ namespace BodySliders
 				for (int i = 0; i < charaFemale.femaleCustomInfo.hairId.Length; i++)
 					charaFemale.femaleCustom.ChangeHairColor(i);
 			}
+		}
+		
+		void FuseFace()
+		{
+			//TODO: Store two CharFileInfoCustomFemale loaded from list and only then fuse them into active chara
+			CharFemale copy = Manager.Character.Instance.CreateFemale(Manager.Scene.Instance.commonSpace, -1, charaFemale.femaleFile);
+			CharFileInfoCustomFemale current = new CharFileInfoCustomFemale();
+			current = copy.femaleCustomInfo;
+
+			CharFileInfoCustomFemale cfic = GetCharCustom();
+			if (cfic != null)
+			{
+			
+				float blend = UnityEngine.Random.Range(0.3f, 0.7f);
+				float blendColor = UnityEngine.Random.Range(0f, 1f);
+			
+				for (int i = 0; i < charaFemale.femaleCustomInfo.shapeValueFace.Length; i++)
+					charaFemale.femaleCustomInfo.shapeValueFace[i] = Mathf.Lerp(current.shapeValueFace[i], cfic.shapeValueFace[i], blend);
+			
+				blend = UnityEngine.Random.Range(0.3f, 0.7f);
+				for (int j = 0; j < charaFemale.femaleCustomInfo.shapeValueBody.Length; j++)
+					charaFemale.femaleCustomInfo.shapeValueBody[j] = Mathf.Lerp(current.shapeValueBody[j], cfic.shapeValueBody[j], blend);
+			
+				charaFemale.femaleCustomInfo.headId = BoolR() ? current.headId : cfic.headId;
+				
+				charaFemale.femaleCustomInfo.matEyebrowId = BoolR() ? current.matEyebrowId : cfic.matEyebrowId;
+				charaFemale.femaleCustomInfo.matEyeHiId = BoolR() ? current.matEyeHiId : cfic.matEyeHiId;
+				charaFemale.femaleCustomInfo.matEyelashesId = BoolR() ? current.matEyelashesId : cfic.matEyelashesId;
+				if (BoolR())
+				{
+					charaFemale.femaleCustomInfo.matEyeLId = cfic.matEyeLId;
+					charaFemale.femaleCustomInfo.matEyeRId = cfic.matEyeRId;
+				}
+				
+				charaFemale.femaleCustomInfo.texCheekId = BoolR() ? current.texCheekId : cfic.texCheekId;
+				charaFemale.femaleCustomInfo.texEyeshadowId = BoolR() ? current.texEyeshadowId : cfic.texEyeshadowId;
+				charaFemale.femaleCustomInfo.texFaceDetailId = BoolR() ? current.texFaceDetailId : cfic.texFaceDetailId;
+				charaFemale.femaleCustomInfo.texFaceId = BoolR() ? current.texFaceId : cfic.texFaceId;
+				charaFemale.femaleCustomInfo.texLipId = BoolR() ? current.texLipId : cfic.texLipId;
+				charaFemale.femaleCustomInfo.texMoleId = BoolR() ? current.texMoleId : cfic.texMoleId;
+				charaFemale.femaleCustomInfo.texTattoo_fId = BoolR() ? current.texTattoo_fId : cfic.texTattoo_fId;
+			
+				if (charaFemale.femaleCustomInfo.tattoo_fColor.alpha != 0f && cfic.tattoo_fColor.alpha != 0f) {
+					blendColor = UnityEngine.Random.Range(0f, 1f);
+					charaFemale.femaleCustomInfo.tattoo_fColor.BlendRGB(current.tattoo_fColor, cfic.tattoo_fColor, blendColor);
+				}
+			
+				blendColor = UnityEngine.Random.Range(0f, 1f);
+				charaFemale.femaleCustomInfo.eyeLColor.BlendRGB(current.eyeLColor, cfic.eyeLColor, blendColor);
+				charaFemale.femaleCustomInfo.eyeRColor.BlendRGB(current.eyeRColor, cfic.eyeRColor, blendColor);
+			
+				blendColor = UnityEngine.Random.Range(0f, 1f);
+				charaFemale.femaleCustomInfo.eyeWColor.BlendRGB(current.eyeWColor, cfic.eyeWColor, blendColor);
+			
+				blend = UnityEngine.Random.Range(0.3f, 0.7f);
+				charaFemale.femaleCustomInfo.faceDetailWeight = Mathf.Lerp(current.faceDetailWeight, cfic.faceDetailWeight, blend);
+			
+				if (current.eyeshadowColor.alpha != 0f && cfic.eyeshadowColor.alpha != 0f) {
+					blendColor = UnityEngine.Random.Range(0f, 1f);
+					charaFemale.femaleCustomInfo.eyeshadowColor.BlendRGB(current.eyeshadowColor, cfic.eyeshadowColor, blendColor);
+				}
+			
+				if (current.cheekColor.alpha != 0f && cfic.cheekColor.alpha != 0f) {
+					blendColor = UnityEngine.Random.Range(0f, 1f);
+					charaFemale.femaleCustomInfo.cheekColor.BlendRGB(current.cheekColor, cfic.cheekColor, blendColor);
+				}
+			
+				if (current.lipColor.alpha != 0f && cfic.lipColor.alpha != 0f) {
+					blendColor = UnityEngine.Random.Range(0f, 1f);
+					charaFemale.femaleCustomInfo.lipColor.BlendRGB(current.lipColor, cfic.lipColor, blendColor);
+				}
+			
+				if (current.moleColor.alpha != 0f && cfic.moleColor.alpha != 0f) {
+					blendColor = UnityEngine.Random.Range(0f, 1f);
+					charaFemale.femaleCustomInfo.moleColor.BlendRGB(current.moleColor, cfic.moleColor, blendColor);
+				}
+			
+				blendColor = UnityEngine.Random.Range(0f, 1f);
+				charaFemale.femaleCustomInfo.eyelashesColor.BlendRGB(current.eyelashesColor, cfic.eyelashesColor, blendColor);
+			
+				blendColor = UnityEngine.Random.Range(0f, 1f);
+				charaFemale.femaleCustomInfo.eyeHiColor.BlendRGB(current.eyeHiColor, cfic.eyeHiColor, blendColor);
+
+				charaFemale.femaleBody.ChangeHeadNew();
+				charaFemale.femaleCustom.UpdateShapeFaceValueFromCustomInfo();
+				charaFemale.femaleCustom.ChangeCustomFaceWithoutCustomTexture();
+				charaFemale.UpdateFace();
+			}
+		}
+		
+		bool BoolR()
+		{
+			return new System.Random().Next() % 2 == 0;
 		}
 	}
 }
