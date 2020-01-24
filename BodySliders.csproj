@@ -27,6 +27,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Sliders\CharacterPart.cs" />
+    <Compile Include="Sliders\CharacterOptions.cs" />
     <Compile Include="Sliders\SlidersUI.cs" />
     <Compile Include="Sliders\SliderNames.cs" />
     <Compile Include="Sliders\Main.cs" />

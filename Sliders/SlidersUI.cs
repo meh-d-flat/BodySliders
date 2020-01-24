@@ -35,11 +35,13 @@ namespace BodySliders
 		
 		Rect windowSub = new Rect((int)(Screen.width / 3.35F), 0, (int)(Screen.width / 2.485F) / 2, Screen.height / 2);
 
-		CharacterPart somePart;
+		CharacterPart somePart, deleteButton;
 		
 		CharaList listFemale, listMale;
 		
-		CharaFileSort charaFiles;
+//		CharaFileSort charaFiles;
+		
+//		CharFileInfoCustomFemale chaFileOne, chaFileTwo;
 		
 		Transform mainCanvas;
 		
@@ -58,6 +60,7 @@ namespace BodySliders
 			subType = SubType.none;
 			onlySliderValues = SlidersPlugin.onlyBodyValues;
 			somePart = AllParts.nullPart;
+			deleteButton = new DeleteChara();
 		}
 		
 		void Start()
@@ -141,20 +144,7 @@ namespace BodySliders
 				GUILayout.Label("§>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 				somePart = AllParts.GetPart(somePart);
 				
-				GUILayout.Label("§ Load selected char's:");
-				if (GUILayout.Button("Hair"))
-					LoadHair();
-					
-				if (GUILayout.Button("Face"))
-					LoadFace();
-				
-				if (GUILayout.Button("Body"))
-					LoadBody();
-				
-				if (GUILayout.Button("Fuse face"))
-					FuseFace();
-				
-				DeleteButton();
+				DrawOptions();
 				
 				GUILayout.EndScrollView();				
 				if (GUILayout.Button("SAVE CHAR"))
@@ -168,23 +158,21 @@ namespace BodySliders
 				if (GUILayout.Button("SAVE MALE CHAR"))
 					Save();	
 				
-				DeleteButton();
+				DrawOptions();
 			}
 			else
 			{
 				GUILayout.Label("Select a character!");
-				DeleteButton();
+				DrawOptions();
 			}
 			
 			GUI.DragWindow();
 		}
 
-		void DeleteButton()
+		void DrawOptions()
 		{
-			GUILayout.Label("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-			if (GUILayout.Button("DELETE CHARACTER SELECTED IN CHAR LIST"))
-				Delete();
-			GUILayout.Label("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+			GUILayout.Label("§>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+				somePart = AllParts.GetOptions(somePart);
 		}
 		
 		bool Check()
@@ -298,220 +286,23 @@ namespace BodySliders
 			mainCanvas.gameObject.SetActive(true);
 		}
 		
-		CharFileInfoCustomFemale GetCharCustom()
-		{
-			CharFileInfoCustomFemale charCustomFile = null;
-			CharaList operatingList = mainCanvas.Find("01_Add/00_Female").gameObject.activeInHierarchy ? listFemale : null;
-			if (operatingList != null)
-			{
-				charaFiles = (CharaFileSort)operatingList.GetType()
-				.GetField("charaFileSort", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(operatingList);
-				if (System.IO.File.Exists(charaFiles.selectPath) && charaFiles.selectPath != null)
-				{
-					CharFemaleFile charPNG = new CharFemaleFile();
-					charPNG.Load(charaFiles.selectPath, true, true);
-					charCustomFile = charPNG.femaleCustomInfo;
-				}
-				return charCustomFile;
-			}
-			return charCustomFile;
-		}
-		
-		void Delete()
-		{
-			CharaList operatingList = mainCanvas.Find("01_Add/00_Female").gameObject.activeInHierarchy ? listFemale : mainCanvas.Find("01_Add/01_Male").gameObject.activeInHierarchy ? listMale : null;
-			if (operatingList != null)
-			{
-				charaFiles = (CharaFileSort)operatingList.GetType()
-				.GetField("charaFileSort", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(operatingList);
-				if (System.IO.File.Exists(charaFiles.selectPath) && charaFiles.selectPath != null)
-				{
-					var sortType = charaFiles.sortKind;
-					mainCanvas.gameObject.SetActive(false);
-					System.IO.File.Delete(charaFiles.selectPath);
-					operatingList.InitCharaList(true);
-					operatingList.OnSort(sortType);
-					mainCanvas.gameObject.SetActive(true);
-				}
-			}
-		}
-		
-		void LoadBody()
-		{
-			CharFileInfoCustomFemale cfic = GetCharCustom();
-			if (cfic != null)
-			{
-				charaFemale.femaleCustomInfo.shapeValueBody = cfic.shapeValueBody;
-				charaFemale.femaleCustomInfo.areolaSize = cfic.areolaSize;
-				charaFemale.femaleCustomInfo.bodyDetailWeight = cfic.bodyDetailWeight;
-				charaFemale.femaleCustomInfo.bustSoftness = cfic.bustSoftness;
-				charaFemale.femaleCustomInfo.bustWeight = cfic.bustWeight;
-				charaFemale.femaleCustomInfo.matNipId = cfic.matNipId;
-				charaFemale.femaleCustomInfo.matUnderhairId = cfic.matUnderhairId;
-				charaFemale.femaleCustomInfo.nailColor = cfic.nailColor;
-				charaFemale.femaleCustomInfo.nipColor = cfic.nipColor;
-				charaFemale.femaleCustomInfo.skinColor = cfic.skinColor;
-				charaFemale.femaleCustomInfo.sunburnColor = cfic.sunburnColor;
-				charaFemale.femaleCustomInfo.tattoo_bColor = cfic.tattoo_bColor;
-				charaFemale.femaleCustomInfo.texBodyDetailId = cfic.texBodyDetailId;
-				charaFemale.femaleCustomInfo.texBodyId = cfic.texBodyId;
-				charaFemale.femaleCustomInfo.texSunburnId = cfic.texSunburnId;
-				charaFemale.femaleCustomInfo.texTattoo_bId = cfic.texTattoo_bId;
-				charaFemale.femaleCustomInfo.underhairColor = cfic.underhairColor;
-				
-				charaFemale.Reload(true, true, true);
-//				charaFemale.ChangeBustGravity(cfic.bustWeight);
-//				charaFemale.ChangeBustSoftness(cfic.bustSoftness);
-				charaFemale.UpdateFace();
-			}
-		}
-		
-		void LoadFace()
-		{
-			CharFileInfoCustomFemale cfic = GetCharCustom();
-			if (cfic != null)
-			{					
-				charaFemale.femaleCustomInfo.cheekColor = cfic.cheekColor;
-				charaFemale.femaleCustomInfo.eyebrowColor = cfic.eyebrowColor;
-				charaFemale.femaleCustomInfo.eyeHiColor = cfic.eyeHiColor;
-				charaFemale.femaleCustomInfo.eyelashesColor = cfic.eyelashesColor;
-				charaFemale.femaleCustomInfo.eyeLColor = cfic.eyeLColor;
-				charaFemale.femaleCustomInfo.eyeRColor = cfic.eyeRColor;
-				charaFemale.femaleCustomInfo.eyeshadowColor = cfic.eyeshadowColor;
-				charaFemale.femaleCustomInfo.eyeWColor = cfic.eyeWColor;
-				charaFemale.femaleCustomInfo.faceDetailWeight = cfic.faceDetailWeight;
-				charaFemale.femaleCustomInfo.headId = cfic.headId;
-				charaFemale.femaleCustomInfo.lipColor = cfic.lipColor;
-				charaFemale.femaleCustomInfo.matEyebrowId = cfic.matEyebrowId;
-				charaFemale.femaleCustomInfo.matEyeHiId = cfic.matEyeHiId;
-				charaFemale.femaleCustomInfo.matEyelashesId = cfic.matEyelashesId;
-				charaFemale.femaleCustomInfo.matEyeLId = cfic.matEyeLId;
-				charaFemale.femaleCustomInfo.matEyeRId = cfic.matEyeRId;
-				charaFemale.femaleCustomInfo.moleColor = cfic.moleColor;
-				charaFemale.femaleCustomInfo.shapeValueFace = cfic.shapeValueFace;
-				charaFemale.femaleCustomInfo.tattoo_fColor = cfic.tattoo_fColor;
-				charaFemale.femaleCustomInfo.texCheekId = cfic.texCheekId;
-				charaFemale.femaleCustomInfo.texEyeshadowId = cfic.texEyeshadowId;
-				charaFemale.femaleCustomInfo.texFaceDetailId = cfic.texFaceDetailId;
-				charaFemale.femaleCustomInfo.texFaceId = cfic.texFaceId;
-				charaFemale.femaleCustomInfo.texLipId = cfic.texLipId;
-				charaFemale.femaleCustomInfo.texMoleId = cfic.texMoleId;
-				charaFemale.femaleCustomInfo.texTattoo_fId = cfic.texTattoo_fId;
-			
-				charaFemale.femaleBody.ChangeHeadNew();
-				charaFemale.femaleCustom.UpdateShapeFaceValueFromCustomInfo();
-				charaFemale.femaleCustom.ChangeCustomFaceWithoutCustomTexture();
-				charaFemale.UpdateFace();
-			}
-		}
-		
-		void LoadHair()
-		{
-			CharFileInfoCustomFemale cfic = GetCharCustom();
-			if (cfic != null)
-			{			
-				charaFemale.femaleCustomInfo.hairAcsColor = cfic.hairAcsColor;
-				charaFemale.femaleCustomInfo.hairColor = cfic.hairColor;
-				charaFemale.femaleCustomInfo.hairId = cfic.hairId;
-				charaFemale.femaleCustomInfo.hairType = cfic.hairType;
-					
-				charaFemale.femaleBody.ChangeHair(true);
-				for (int i = 0; i < charaFemale.femaleCustomInfo.hairId.Length; i++)
-					charaFemale.femaleCustom.ChangeHairColor(i);
-			}
-		}
-		
-		void FuseFace()
-		{
-			//TODO: Store two CharFileInfoCustomFemale loaded from list and only then fuse them into active chara
-			CharFemale copy = Manager.Character.Instance.CreateFemale(Manager.Scene.Instance.commonSpace, -1, charaFemale.femaleFile);
-			CharFileInfoCustomFemale current = new CharFileInfoCustomFemale();
-			current = copy.femaleCustomInfo;
-
-			CharFileInfoCustomFemale cfic = GetCharCustom();
-			if (cfic != null)
-			{
-			
-				float blend = UnityEngine.Random.Range(0.3f, 0.7f);
-				float blendColor = UnityEngine.Random.Range(0f, 1f);
-			
-				for (int i = 0; i < charaFemale.femaleCustomInfo.shapeValueFace.Length; i++)
-					charaFemale.femaleCustomInfo.shapeValueFace[i] = Mathf.Lerp(current.shapeValueFace[i], cfic.shapeValueFace[i], blend);
-			
-				blend = UnityEngine.Random.Range(0.3f, 0.7f);
-				for (int j = 0; j < charaFemale.femaleCustomInfo.shapeValueBody.Length; j++)
-					charaFemale.femaleCustomInfo.shapeValueBody[j] = Mathf.Lerp(current.shapeValueBody[j], cfic.shapeValueBody[j], blend);
-			
-				charaFemale.femaleCustomInfo.headId = BoolR() ? current.headId : cfic.headId;
-				
-				charaFemale.femaleCustomInfo.matEyebrowId = BoolR() ? current.matEyebrowId : cfic.matEyebrowId;
-				charaFemale.femaleCustomInfo.matEyeHiId = BoolR() ? current.matEyeHiId : cfic.matEyeHiId;
-				charaFemale.femaleCustomInfo.matEyelashesId = BoolR() ? current.matEyelashesId : cfic.matEyelashesId;
-				if (BoolR())
-				{
-					charaFemale.femaleCustomInfo.matEyeLId = cfic.matEyeLId;
-					charaFemale.femaleCustomInfo.matEyeRId = cfic.matEyeRId;
-				}
-				
-				charaFemale.femaleCustomInfo.texCheekId = BoolR() ? current.texCheekId : cfic.texCheekId;
-				charaFemale.femaleCustomInfo.texEyeshadowId = BoolR() ? current.texEyeshadowId : cfic.texEyeshadowId;
-				charaFemale.femaleCustomInfo.texFaceDetailId = BoolR() ? current.texFaceDetailId : cfic.texFaceDetailId;
-				charaFemale.femaleCustomInfo.texFaceId = BoolR() ? current.texFaceId : cfic.texFaceId;
-				charaFemale.femaleCustomInfo.texLipId = BoolR() ? current.texLipId : cfic.texLipId;
-				charaFemale.femaleCustomInfo.texMoleId = BoolR() ? current.texMoleId : cfic.texMoleId;
-				charaFemale.femaleCustomInfo.texTattoo_fId = BoolR() ? current.texTattoo_fId : cfic.texTattoo_fId;
-			
-				if (charaFemale.femaleCustomInfo.tattoo_fColor.alpha != 0f && cfic.tattoo_fColor.alpha != 0f) {
-					blendColor = UnityEngine.Random.Range(0f, 1f);
-					charaFemale.femaleCustomInfo.tattoo_fColor.BlendRGB(current.tattoo_fColor, cfic.tattoo_fColor, blendColor);
-				}
-			
-				blendColor = UnityEngine.Random.Range(0f, 1f);
-				charaFemale.femaleCustomInfo.eyeLColor.BlendRGB(current.eyeLColor, cfic.eyeLColor, blendColor);
-				charaFemale.femaleCustomInfo.eyeRColor.BlendRGB(current.eyeRColor, cfic.eyeRColor, blendColor);
-			
-				blendColor = UnityEngine.Random.Range(0f, 1f);
-				charaFemale.femaleCustomInfo.eyeWColor.BlendRGB(current.eyeWColor, cfic.eyeWColor, blendColor);
-			
-				blend = UnityEngine.Random.Range(0.3f, 0.7f);
-				charaFemale.femaleCustomInfo.faceDetailWeight = Mathf.Lerp(current.faceDetailWeight, cfic.faceDetailWeight, blend);
-			
-				if (current.eyeshadowColor.alpha != 0f && cfic.eyeshadowColor.alpha != 0f) {
-					blendColor = UnityEngine.Random.Range(0f, 1f);
-					charaFemale.femaleCustomInfo.eyeshadowColor.BlendRGB(current.eyeshadowColor, cfic.eyeshadowColor, blendColor);
-				}
-			
-				if (current.cheekColor.alpha != 0f && cfic.cheekColor.alpha != 0f) {
-					blendColor = UnityEngine.Random.Range(0f, 1f);
-					charaFemale.femaleCustomInfo.cheekColor.BlendRGB(current.cheekColor, cfic.cheekColor, blendColor);
-				}
-			
-				if (current.lipColor.alpha != 0f && cfic.lipColor.alpha != 0f) {
-					blendColor = UnityEngine.Random.Range(0f, 1f);
-					charaFemale.femaleCustomInfo.lipColor.BlendRGB(current.lipColor, cfic.lipColor, blendColor);
-				}
-			
-				if (current.moleColor.alpha != 0f && cfic.moleColor.alpha != 0f) {
-					blendColor = UnityEngine.Random.Range(0f, 1f);
-					charaFemale.femaleCustomInfo.moleColor.BlendRGB(current.moleColor, cfic.moleColor, blendColor);
-				}
-			
-				blendColor = UnityEngine.Random.Range(0f, 1f);
-				charaFemale.femaleCustomInfo.eyelashesColor.BlendRGB(current.eyelashesColor, cfic.eyelashesColor, blendColor);
-			
-				blendColor = UnityEngine.Random.Range(0f, 1f);
-				charaFemale.femaleCustomInfo.eyeHiColor.BlendRGB(current.eyeHiColor, cfic.eyeHiColor, blendColor);
-
-				charaFemale.femaleBody.ChangeHeadNew();
-				charaFemale.femaleCustom.UpdateShapeFaceValueFromCustomInfo();
-				charaFemale.femaleCustom.ChangeCustomFaceWithoutCustomTexture();
-				charaFemale.UpdateFace();
-			}
-		}
-		
-		bool BoolR()
-		{
-			return new System.Random().Next() % 2 == 0;
-		}
+//		void Delete()
+//		{
+//			CharaList operatingList = mainCanvas.Find("01_Add/00_Female").gameObject.activeInHierarchy ? listFemale : mainCanvas.Find("01_Add/01_Male").gameObject.activeInHierarchy ? listMale : null;
+//			if (operatingList != null)
+//			{
+//				charaFiles = (CharaFileSort)operatingList.GetType()
+//				.GetField("charaFileSort", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(operatingList);
+//				if (System.IO.File.Exists(charaFiles.selectPath) && charaFiles.selectPath != null)
+//				{
+//					var sortType = charaFiles.sortKind;
+//					mainCanvas.gameObject.SetActive(false);
+//					System.IO.File.Delete(charaFiles.selectPath);
+//					operatingList.InitCharaList(true);
+//					operatingList.OnSort(sortType);
+//					mainCanvas.gameObject.SetActive(true);
+//				}
+//			}
+//		}
 	}
 }

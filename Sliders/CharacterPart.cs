@@ -99,7 +99,12 @@ namespace BodySliders
 			{ "Hair Front", typeof(AllParts.HairFront) },
 			{ "Hair Back", typeof(AllParts.HairBack) },
 			{ "Hair Side", typeof(AllParts.HairSide) },
-			{ "Hair Accessory", typeof(AllParts.HairAcs) }
+			{ "Hair Accessory", typeof(AllParts.HairAcs) },
+			{ "Load / Fuse", typeof(LoadAndFuse)}
+		};
+		
+		static Dictionary<string, Type> allOptions = new Dictionary<string, Type>() {
+			{ "Delete selected char file", typeof(DeleteChara)}
 		};
 		
 		public static CharacterPart GetSlider(CharacterPart prt)
@@ -118,6 +123,19 @@ namespace BodySliders
 		public static CharacterPart GetPart(CharacterPart prt)
 		{
 			foreach (var entry in allParts)
+			{
+				if (GUILayout.Button(entry.Key))
+				{
+					ReSet();
+					prt = (CharacterPart)Activator.CreateInstance(entry.Value);
+				}
+			}
+			return prt;
+		}
+		
+		public static CharacterPart GetOptions(CharacterPart prt)
+		{
+			foreach (var entry in allOptions)
 			{
 				if (GUILayout.Button(entry.Key))
 				{
@@ -674,6 +692,16 @@ namespace BodySliders
 				AddStep(() => Functionality.ButtonTypical(referenceColor, new Action(() => referenceChara.UpdateFace())));
 				AddStep(() => Functionality.GUIListDraw(ref referenceChara.femaleCustomInfo.texEyeshadowId, ref listScrollView, listAllParts, referenceChara.femaleBody.ChangeHeadNew));
 			}
+		}
+		
+		class PresetsTab : CharacterPart
+		{
+			public override void Init()
+			{
+				partName = "Load and Fuse";
+
+			}
+			
 		}
 	}
 	
